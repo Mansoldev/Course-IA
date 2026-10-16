@@ -19,3 +19,7 @@ Install other packages related "pip install langchain-openai langchain-google-ge
 See a package info "pip show langchain"
 
 Create windows env "setx NAME(OPENAI_API_KEY/GOOGLE_API_KEY) "KEY""
+
+## Streamlit
+
+Run streamlit "streamlit run .\streamlit_chatbot.py"
