@@ -1,10 +1,10 @@
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
-#from langchain_core.output_parsers import StrOutputParser
 
 class AnalisisTexto(BaseModel):
     resumen: str = Field(description="Resumen breve del texto")
     sentimiento: str = Field(description="Sentimiento del texto (positivo, negativo o neutro)")
+    palabras_clave: list[str] = Field(description="Lista de palabras clave del texto")
 
 llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0.6)
 
