@@ -18,7 +18,9 @@ Install other packages related "pip install langchain-openai langchain-google-ge
 
 See a package info "pip show langchain"
 
-Create windows env "setx NAME(OPENAI_API_KEY/GOOGLE_API_KEY) "KEY""
+Create windows env in cmd "setx NAME(OPENAI_API_KEY/GOOGLE_API_KEY) "KEY""
+
+See Windows env in cmd "set"
 
 ## Streamlit
 
