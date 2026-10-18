@@ -20,4 +20,5 @@ print(f"Dimensión de los vectores: {len(vec1)}")
 # Cálculo de similitud coseno
 cos_sim = np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
 
-print(f"Similitud coseno entre vec1 y vec2: {cos_sim:.3f}")
+print(f"Similitud coseno entre vec1 y vec2: {cos_sim:.3f}") 
+#Cuanto más cercano a 1, más similares son los textos. Cuanto más cercano a 0, menos similares son los textos.
