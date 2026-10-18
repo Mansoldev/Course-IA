@@ -33,3 +33,25 @@ Install pypdf "pip install pypdf"
 install langchain-community "pip install langchain-community"
 
 install for webloader: "pip install beautifulsoup4"
+
+install for google drive loader "pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib"
+
+Go to google cloud console > use the project 
+
+	> Menu "APIs and services" > Enable APIs and services > Google Drive API > Enable
+
+	> Credentials > Create OAuth client ID > Configure Screen > Create Oauth Client ID > Download credentials.json
+
+	> Audience > Add Users > our email
+
+install PyPDF2 "pip install PyPDF2"
+
+install real langchain google community "pip install langchain_google_community"
+
+install for directory loader "pip install tqdm"
+
+install for youtube loader "pip install youtube-transcript-api"
+
+install for UnstructuredHTML "pip install unstructured"
+
+install for Selenium "pip install selenium"

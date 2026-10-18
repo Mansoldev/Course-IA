@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Presentación Web</title>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+		<style>
+			p,pre,code,.reveal table th {
+				font-size: 22px;
+			}
+			.reveal ul,ol {
+				margin-bottom: 15px;
+				display: block;
+			}
+			ul,ol > li {
+				font-size: 20px;
+			}
+			a,h6 {
+				font-size: 25px;
+			}
+			span.important {
+				font-size: 25px;
+				font-weight: bolder;
+				color: red;
+			}
+			.reveal table th, .reveal table td {
+				padding: 0;
+			}
+			.reveal table.separada th, .reveal table.separada td {
+				padding-right: 20px;
+			}
+			.reveal pre code.small {
+				max-width:800px;
+			}
+
+			.text-left {
+				text-align: left;
+			}
+		</style>
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/monokai.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<section>
+						<h2>EL MERCADO LABORAL - WEB</h2>
+
+						<img src="img/Nada.webp" width="600">
+					</section>
+
+					<section>
+						<h6 class="text-left">Tradicionalmente hay 3 tipos de aplicaciones más comunes:</h6>
+						<ul>
+							<li>Aplicaciones/Programas de Escritorio: Windows, Linux y Apple</li>
+							<li>Aplicaciones/Programas Web</li>
+							<li>Aplicaciones/Programas Movil: Android y Apple</li>
+						</ul>
+						<p class="text-left">Otros: S.O., aplicaciones bancarias, juegos, plugins</p>
+						<br/>
+						<p>Vamos a centrarnos en las aplicaciones web</p>
+					</section>
+
+					<section>
+						<h6 class="text-left">Vamos a dar:</h6>
+						<ul>
+							<li>Tipos de aplicaciones del Mercado</li>
+							<li>Técnologías/Buenas prácticas Front</li>
+							<li>Técnologías/Buenas prácticas Back</li>
+						</ul>
+					</section>
+				</section>
+
+				<!-- TIPOS APPS -->
+				<section>
+					<section>
+						<h3>TIPOS DE APLICACIONES (Agnósticas a la tecnología)</h3>
+					</section>
+					<section>
+						<h6>Por división de código</h6>
+						<br>
+
+						<p class="text-left">Antiguamente solo habia un tipo de aplicación web</p>
+						<ul>
+							<li>La aplicación monolito: donde estaba desde la conexión a BBDD a las vistas</li>
+						</ul>
+
+						<br>
+						<p class="text-left">Hoy en día solemos encontrar al menos 2</p>
+						<ul>
+							<li>La aplicación Front: HTML, CSS y JS (Excepciones como Blazor)</li>
+							<li>La API: Hecha con cualquier lenguaje de Back y normalmente envia y recibe JSON (xml si es vieja)</li>
+						</ul>
+					</section>
+
+					<section>
+						<h6>Por utilidad</h6>
+
+						<p class="text-left">Los tipos de aplicaciones más comunes:</p>
+						<ul>
+							<li>Web corporativa (Landing): cualquier web de empresa o particular con sus servicios</li>
+							<li>Webs de servicios a usuarios: Parecida a la anterior pero con más interacción (reserva de entradas o web de vuelos)</li>
+							<li>Enfocadas: Blogs, ecommerces/markets, portales educativos (Desarrollados bastantes con CMSs)</li>
+							<li>Aplicaciones especializadas: Teams, discord, vscode</li>
+							<li>Redes sociales</li>
+							<li>CRMs: Aplicaciones internas de empresas, cuentan con varios modulos</li>
+							<li>APIs públicas, privadas e integraciones</li>
+						</ul>
+						<p class="text-left">* Estos tipos de aplicaciones pueden ser cada una un monolito o estar separadas.</p>
+					</section>
+
+					<section>
+						<h6>Por tecnologías - Front*</h6>
+
+						<ul>
+							<li>Estáticas: Sin backend (El resto dinámicas)</li>
+							<li>SPA: Single Page Aplication</li>
+							<li>SSR: Server Side Rendering</li>
+							<li>SSG: Static Site Generator</li>
+							<li>PWA: Progresive Web Apps</li>
+							<li>Híbridas: web y movil / Web y escritorio</li>
+						</ul>
+						<p class="text-left">Estos no son excluyentes</p>
+					</section>
+
+					<section>
+						<h6>Por tecnologías - Back* (Arquitectura)</h6>
+
+						<p>Normalmente depende de las capas en las que se componga</p>
+						<ul>
+							<li>Código espagueti</li>
+							<li>MVC</li>
+							<li>TDD</li>
+							<li>DDD</li>
+							<li>Arquitectura hexagonal</li>
+							<li>Microservicios</li>
+						</ul>
+					</section>
+				</section>
+
+				<!-- FRONT -->
+				<section>
+					<section>
+						<h3>TÉCNOLOGÍAS/BUENAS PRÁCTICAS DEL FRONT</h3>
+						<a href="https://roadmap.sh/frontend">Camino del front developper</a>
+					</section>
+
+					<section>
+						<h6>HTML</h6>
+
+						<p>Deberias de profundizar en los siguientes temas:</p>
+						<ul>
+							<li>Atributos globales o no vistos</li>
+							<li>Etiquetas semánticas: header, nav, main, aside, footer, section, article, figure</li>
+							<li>Atributos Aria, Roles y accesibilidad</li>
+						</ul>
+						<img src="img/Semantico.PNG" width="200">
+					</section>
+
+					<section>
+						<h6>CSS</h6>
+
+						<p>Deberias de profundizar en los siguientes temas:</p>
+						<ul>
+							<li>Flexbox y Grid</li>
+							<li>Colores, fuentes, layout, selectores</li>
+							<li>Componentes avanzados, animaciones (Codepen)</li>
+							<li>Frameworks y librerias: Bootstrap, tailwind, normalize</li>
+							<li>Arquitectura CSS: BEM, ITCSS</li>
+							<li>Preprocesadores CSS (Sass) y PostCSS</li>
+						</ul>
+					</section>
+
+					<section>
+						<h6>JS - Lenguaje</h6>
+
+						<p>Deberias de profundizar en los siguientes temas:</p>
+						<ul>
+							<li>Eventos en elementos, de navegador, ratón, teclado, ventana, formulario</li>
+							<li>Funciones de manejo de objetos y arrays</li>
+							<li>Asincronia</li>
+							<li>Manipulacion del DOM</li>
+							<li>Llamadas a API: Fetch y axios</li>
+							<li>APIs de navegador</li>
+						</ul>
+					</section>
+
+					<section>
+						<h6>JS - Extendido</h6>
+
+						<p>Deberias de profundizar en los siguientes temas:</p>
+						<ul>
+							<li>JQuery, viejo pero lo pueden pedir</li>
+							<li>TypeScript</li>
+							<li>Manejarte con Node y NPM</li>
+							<li>Elegir un framework: Angular, React o Vue</li>
+							<li>Aprender ecosistema de framework: routeo, manejo de estado local y gloabl y de peticiones a API</li>
+							<li>Tests unitarios y end to end</li>
+						</ul>
+					</section>
+
+					<section>
+						<h6>Otras cosas de Front</h6>
+
+						<p>Deberias de profundizar en los siguientes temas:</p>
+						<ul>
+							<li>Diseño, prototipado (SIGMA) y wireframes</li>
+							<li>UX e UI</li>
+							<li>Performance</li>
+							<li>Ciclos del front</li>
+						</ul>
+					</section>
+
+					<section>
+						<h6>Hoy en día hay dos formas de manejar proyectos web de Front:</h6>
+
+						<ul>
+							<li>Creando un HTML e importando cosas con Links y Scripts</li>
+							<li>A través de NPM e importando paquetes</li>
+						</ul>
+					</section>
+				</section>
+
+				<!-- BACK -->
+				<section>
+					<section>
+						<h3>TÉCNOLOGÍAS/BUENAS PRÁCTICAS DEL BACK</h3>
+						<a href="https://roadmap.sh/backend">Camino del Backend developper</a>
+					</section>
+
+					<section>
+						<h6>Elegir un lenguaje</h6>
+
+						<p>Deberias elegir un lenguaje y especializarte, pero probar varios en profundidad.</p>
+					</section>
+
+					<section>
+						<h6>Buenas prácticas:</h6>
+
+						<ul>
+							<li>SOLID</li>
+							<li>Patrones de diseño</li>
+							<li>Composición de clases</li>
+							<li>Programación funcional</li>
+						</ul>
+					</section>
+
+					<section>
+						<h6>Saber como hacer varios tipos de aplicación</h6>
+
+						<ul>
+							<li>Un monolito</li>
+							<li>Microservicios</li>
+							<li>Una API</li>
+						</ul>
+					</section>
+
+					<section>
+						<h6>Para ello necesitas saber:</h6>
+
+						<ul>
+							<li>Autenticación y encriptación</li>
+							<li>Verbos HTTP</li>
+							<li>ORM</li>
+							<li>SQL</li>
+							<li>GIT</li>
+							<li>Sesiones, transacciones y persistencia</li>
+							<li>Test unitarios, funcionales, de integración</li>
+						</ul>
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
