@@ -25,3 +25,7 @@ See Windows env in cmd "set"
 ## Streamlit
 
 Run streamlit "streamlit run .\streamlit_chatbot.py"
+
+## Topic 2
+
+Install pypdf "pip install pypdf"
