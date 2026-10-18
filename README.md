@@ -36,7 +36,7 @@ install for webloader: "pip install beautifulsoup4"
 
 install for google drive loader "pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib"
 
-Go to google cloud console > use the project 
+Go to google cloud console > use the project
 
 	> Menu "APIs and services" > Enable APIs and services > Google Drive API > Enable
 
@@ -55,3 +55,13 @@ install for youtube loader "pip install youtube-transcript-api"
 install for UnstructuredHTML "pip install unstructured"
 
 install for Selenium "pip install selenium"
+
+## Topic 3 - vector db
+
+Install python estable "winget install Python.Python.3.12"
+
+Create venv python estable "py -3.12 -m venv venv_312" | "py --list"
+
+Activate venv ".\venv_312\Scripts\Activate.ps1"
+
+install vector database chormadb "pip install chromadb langchain_chroma"
