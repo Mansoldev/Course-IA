@@ -23,6 +23,7 @@ docs_split = text_splitter.split_documents(documentos)
 
 print(f"Se crearon {len(docs_split)} chunks de texto.")
 
+# Crea la BBDD a partir de los documentos divididos en chunks
 persist_path_str = str(current_dir / "chroma_db")
 vectorstore = Chroma.from_documents(
     docs_split,
