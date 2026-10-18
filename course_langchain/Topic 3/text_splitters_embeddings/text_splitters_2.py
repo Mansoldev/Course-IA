@@ -28,7 +28,7 @@ summaries = []
 
 i = 0
 for chunk in chunks:
-    if i > 10:
+    if i > 5:
         break
     response = cadena.invoke(f"Haz un resumen de los puntos mas importantes del siguiente texto: {chunk.page_content}")
     summaries.append(response)
