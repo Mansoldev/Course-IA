@@ -12,7 +12,8 @@ vectorstore = Chroma(
     persist_directory=persist_path_str
 )
 
-retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 2})
+#Transformamos la BBDD en retriever, busqueda por similaridad, k=2 para obtener los 2 documentos más similares a la consulta
+retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 2}) 
 
 consulta = "¿Dónde se encuentra el local del contrato en el que participa María Jiménez Campos?"
 resultados = retriever.invoke(consulta)
