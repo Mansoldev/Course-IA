@@ -71,3 +71,5 @@ install langchain-classic "pip install -U langchain-classic"
 "streamlit run app.py"
 
 ## Topic 4 - langGraph
+
+Install langGraph "pip install langgraph"
