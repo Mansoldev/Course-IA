@@ -65,3 +65,7 @@ Create venv python estable "py -3.12 -m venv venv_312" | "py --list"
 Activate venv ".\venv_312\Scripts\Activate.ps1"
 
 install vector database chormadb "pip install chromadb langchain_chroma"
+
+install langchain-classic "pip install -U langchain-classic"
+
+"streamlit run app.py"
