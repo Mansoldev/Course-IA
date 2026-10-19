@@ -58,8 +58,8 @@ def initialize_rag_system():
         ensemble_retriever = EnsembleRetriever(
             retrievers=[mmr_multi_retriever, similarity_retriever],
             weights=[0.7, 0.3], # mayor peso a MMR
-            similarity_threshold=SIMILARITY_THRESHOLD
-        )
+            similarity_threshold=SIMILARITY_THRESHOLD 
+        ) # Una vez pasados los pesos, se filtra por el umbral de similitud para evitar resultados irrelevantes (más alto, más similiar tiene que ser)
         final_retriever = ensemble_retriever
     else:
         final_retriever = mmr_multi_retriever
