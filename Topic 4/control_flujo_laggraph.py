@@ -35,4 +35,5 @@ graph.add_edge("Impar", END)
 compiled = graph.compile()
 
 # Probar el grafo con ejemplos
-print(compiled.invoke({"numero": 3})["resultado"])
+#print(compiled.invoke({"numero": 3})["resultado"])
+print(compiled.invoke({"numero": 4}))
