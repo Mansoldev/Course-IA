@@ -4,9 +4,11 @@ from langgraph.graph import StateGraph, START, END
 from typing import TypedDict, List
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google import genai
+from langchain_core.output_parsers import StrOutputParser
 from tkinter import filedialog
 
 llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0.3)
+chain = llm | StrOutputParser()
 
 class State(TypedDict):
     notes: str
@@ -16,14 +18,6 @@ class State(TypedDict):
     minutes: str
     summary: str
 
-def get_text_content(content) -> str:
-    """Helper para asegurar que el contenido devuelto por el LLM sea siempre un string."""
-    if isinstance(content, str):
-        return content
-    elif isinstance(content, list):
-        # Si es una lista de partes/bloques de texto
-        return "".join([str(part) for part in content])
-    return str(content)
   
 def extract_participants(state: State) -> State:
     prompt = f"""
@@ -32,9 +26,8 @@ def extract_participants(state: State) -> State:
     - No incluyas explicaciones adicionales
     - Formato: Juan García, María López, Carlos Ruiz
     """    
-    response = llm.invoke(prompt)
-    content = get_text_content(response.content)
-    participants = [p.strip() for p in content.split(',') if p.strip()]    
+    response = chain.invoke(prompt)
+    participants = [p.strip() for p in response.split(',') if p.strip()]    
     return {'participants': participants}
 
 def extract_principal_topics(state: State) -> State:
@@ -44,9 +37,8 @@ def extract_principal_topics(state: State) -> State:
     - Incluye solo entre 3 y 5 temas principales
     - Formato: empleados; productividad; innovación
     """    
-    response = llm.invoke(prompt)
-    content = get_text_content(response.content)
-    topics = [p.strip() for p in content.split(';') if p.strip()]    
+    response = chain.invoke(prompt)
+    topics = [p.strip() for p in response.split(';') if p.strip()]    
     return {'topics': topics}
 
 def extract_actions_with_responsable(state: State) -> State:
@@ -55,9 +47,8 @@ def extract_actions_with_responsable(state: State) -> State:
     - Responde SOLO con acciones separadas por pipes | cada acción seguida del responsable entre paréntesis
     - Formato: repartir panfletos (Juan García) | organizar reunión (María López) | enviar informe (Carlos Ruiz)
     """    
-    response = llm.invoke(prompt)
-    content = get_text_content(response.content)
-    actions = [p.strip() for p in content.split('|') if p.strip()]    
+    response = chain.invoke(prompt)
+    actions = [p.strip() for p in response.split('|') if p.strip()]    
     return {'action_items': actions}
 
 def extract_minutes(state: State) -> State:
@@ -66,9 +57,8 @@ def extract_minutes(state: State) -> State:
     - Responde máximo 150 palabras
     - Formato: Minuta formal de reunión
     """    
-    response = llm.invoke(prompt)
-    content = get_text_content(response.content)
-    minutes = content.strip()
+    response = chain.invoke(prompt)
+    minutes = response.strip()
     return {'minutes': minutes}
 
 def extract_summary(state: State) -> State:
@@ -77,9 +67,8 @@ def extract_summary(state: State) -> State:
     - Responde máximo 30 palabras
     - Formato: Resumen ejecutivo conciso
     """    
-    response = llm.invoke(prompt)
-    content = get_text_content(response.content)
-    summary = content.strip()  
+    response = chain.invoke(prompt)
+    summary = response.strip()  
     return {'summary': summary}
 
 def create_workflow():
