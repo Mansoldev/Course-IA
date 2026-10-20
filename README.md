@@ -73,3 +73,7 @@ install langchain-classic "pip install -U langchain-classic"
 ## Topic 4 - langGraph
 
 Install langGraph "pip install langgraph"
+
+Fix project, use google AI
+
+git push origin main
