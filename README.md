@@ -76,4 +76,8 @@ Install langGraph "pip install langgraph"
 
 Fix project, use google AI
 
+# Topic 5 - Memory and context manage
+
+
+
 git push origin main

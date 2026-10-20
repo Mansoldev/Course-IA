@@ -1,0 +1,44 @@
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import HumanMessage, AIMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.output_parsers import StrOutputParser
+#from langchain_openai import ChatOpenAI
+
+## == CHAT SIN HISTORIAL NI MEMORIA - NO TIENE CONTEXTO PREVIO
+
+#llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0)
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "Eres un asistente útil."),
+    MessagesPlaceholder(variable_name="history"),
+    ("human", "{input}")
+])
+
+chain = prompt | llm | StrOutputParser()
+
+history = []
+
+print("Chat en terminal (escribe 'salir' para terminar)\n")
+
+while True:
+    try:
+        user_input = input("Tú: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print("\nHasta luego!")
+        break
+
+    if not user_input:
+        continue
+    if user_input.lower() in {"salir", "exit", "quit"}:
+        print("Hasta luego!")
+        break
+
+    respuesta = chain.invoke({"history": history, "input": user_input})
+    print("Asistente:", respuesta)
+
+    # Actualizamos el historial de mensajes
+    history.extend([
+        HumanMessage(content=user_input),
+        AIMessage(content=respuesta)
+    ])
