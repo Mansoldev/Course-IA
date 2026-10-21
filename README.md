@@ -78,6 +78,8 @@ Fix project, use google AI
 
 # Topic 5 - Memory and context manage
 
+installa langgraph sqlite "pip install langgraph-checkpoint-sqlite"
+
 
 
 git push origin main

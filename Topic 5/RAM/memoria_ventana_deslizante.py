@@ -10,7 +10,6 @@ from langchain_core.messages import trim_messages
 
 #llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0)
-
 chain = llm | StrOutputParser()
 
 class WindowedState(MessagesState):
