@@ -17,5 +17,6 @@ llm_with_tools = llm.bind_tools([herramienta_personalizada])
 chain = llm_with_tools | attrgetter("tool_calls") | herramienta_personalizada.map()
 
 response = chain.invoke("Genera un resumen de la informacion sobre el usuario UX341234 que se encuentra en nuestra base de datos.")
+#response = herramienta_personalizada.run("consulta") # Esto para debuggear la salida sin artefacto, solo sale el primer valor de la tupla
 
 print(response)

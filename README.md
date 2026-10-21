@@ -84,5 +84,7 @@ installa langgraph sqlite "pip install langgraph-checkpoint-sqlite"
 
 install PythonREPL "pip install langchain_experimental"
 
+install integration wikipedia "pip install wikipedia"
+
 
 git push origin main
