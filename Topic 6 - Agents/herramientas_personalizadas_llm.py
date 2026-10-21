@@ -18,4 +18,4 @@ chain = llm_with_tools | attrgetter("tool_calls") | herramienta_personalizada.ma
 
 response = chain.invoke("Genera un resumen de la informacion sobre el usuario UX341234 que se encuentra en nuestra base de datos.")
 
-print(response)
+print(response) #response[0].content para ver solo la query
