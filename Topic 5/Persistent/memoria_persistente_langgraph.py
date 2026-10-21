@@ -6,7 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 import sqlite3
 from langgraph.checkpoint.sqlite import SqliteSaver
 
-## == Memoria persistente - para conservar historiales entre ejecuciones, reinicios o despliegues
+## == Memoria persistente secuencial - para conservar historiales entre ejecuciones, reinicios o despliegues
 
 #llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0)
@@ -29,7 +29,7 @@ conn = sqlite3.connect("historial.db", check_same_thread=False)
 memory = SqliteSaver(conn)
 app = workflow.compile(checkpointer=memory)
 
-def chat(message, thread_id="sesion_terminal"):
+def chat(message, thread_id="sesion_terminal"): # El thread_id hará que podamos recuperar la session
     config = {"configurable": {"thread_id": thread_id}}
     result = app.invoke({"messages": [HumanMessage(content=message)]}, config)
     return result["messages"][-1].content
