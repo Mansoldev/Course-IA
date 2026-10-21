@@ -1,8 +1,8 @@
 from langchain_core.tools import tool
 
 @tool("Herramienta acceso base de datos usuarios", return_direct=True)
-def herramienta_personalizada(query: str) -> str:
-    """Consulta la base de datos de usuarios de la empresa."""
+def herramienta_personalizada(query: str) -> str: #Typehint tipado
+    """Consulta la base de datos de usuarios de la empresa.""" #DocString
     # Codigo que accede a la base de datos
     return f"Respuesta a la consulta: {query}"
 
