@@ -76,10 +76,13 @@ Install langGraph "pip install langgraph"
 
 Fix project, use google AI
 
-# Topic 5 - Memory and context manage
+## Topic 5 - Memory and context manage
 
 installa langgraph sqlite "pip install langgraph-checkpoint-sqlite"
 
+## Topic 6 - Agents
+
+install PythonREPL "pip install langchain_experimental"
 
 
 git push origin main
