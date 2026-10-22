@@ -96,5 +96,7 @@ Go to google cloud console > use the project
 
 install for agente_ia_langchain.py: "pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib"
 
+install langgraph-supervisor for multiagents "pip install langgraph-supervisor"
+
 
 git push origin main
