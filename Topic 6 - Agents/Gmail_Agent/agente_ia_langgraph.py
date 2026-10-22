@@ -1,4 +1,4 @@
-from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chat_models import init_chat_model
 from langchain_community.agent_toolkits import GmailToolkit
@@ -81,7 +81,13 @@ def create_gmail_reply_draft(message: str, to: str, subject: str, thread_id: str
         return f"Error creando borrador de respuesta: {str(e)}"
 
 # Configurar el toolkit de Gmail
-gmail_toolkit = GmailToolkit()
+credentials = get_gmail_credentials(
+    token_file="token.json",
+    scopes=["https://mail.google.com/"],
+    client_secrets_file="C:\\Users\\Mario\\Documents\\Temporal\\credentials.json",
+)
+api_resource = build_resource_service(credentials=credentials)
+gmail_toolkit = GmailToolkit(api_resource=api_resource)
 tools = gmail_toolkit.get_tools()
 tools.append(create_gmail_reply_draft)
 
@@ -89,6 +95,8 @@ tools.append(create_gmail_reply_draft)
 #model = init_chat_model("openai:gpt-4o", temperature=0)
 model = init_chat_model("google_genai:gemini-3.5-flash-lite", temperature=0)
 
+
+#create_gmail_reply_draft acepta "to:str", create_gmail_draft acepta "to: List[str]"
 # Prompt de agente que define su comportamiento
 prompt = ChatPromptTemplate.from_messages([
     ("system", """Eres un asistente de email profesional. Para procesar emails sigue EXACTAMENTE estos pasos:
@@ -107,14 +115,14 @@ prompt = ChatPromptTemplate.from_messages([
     
     5. QUINTO: Genera una respuesta profesional y apropiada en español.
     
-    6. SEXTO: Usa 'create_gmail_draft' para crear un borrador de RESPUESTA (no email nuevo) con:
+    6. SEXTO: Usa 'create_gmail_reply_draft' para crear un borrador de RESPUESTA (no email nuevo) con:
        - "message": tu respuesta generada
        - "subject": "Re: [asunto original]" (si no empieza ya con "Re:")
        - "to": email del remitente original
        - "thread_id": el Thread ID extraído del paso 4 (MUY IMPORTANTE para que sea una respuesta)
 
     CRÍTICO PARA RESPUESTAS:
-    - SIEMPRE incluye "thread_id" en create_gmail_draft para que sea una respuesta, no un email nuevo
+    - SIEMPRE incluye "thread_id" en create_gmail_reply_draft para que sea una respuesta, no un email nuevo
     - El "to" debe ser el email del remitente original
     - El "subject" debe empezar con "Re:" si no lo tiene ya
 
