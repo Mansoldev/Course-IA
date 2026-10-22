@@ -42,7 +42,7 @@ Go to google cloud console > use the project
 
 	> Credentials > Create OAuth client ID > Configure Screen > Create Oauth Client ID > Download credentials.json
 
-	> Audience > Add Users > our email
+	> Google Drive API > Admin > Audience > Add Users > our email
 
 install PyPDF2 "pip install PyPDF2"
 
@@ -85,6 +85,16 @@ installa langgraph sqlite "pip install langgraph-checkpoint-sqlite"
 install PythonREPL "pip install langchain_experimental"
 
 install integration wikipedia "pip install wikipedia"
+
+Go to google cloud console > use the project
+
+	> Menu "APIs and services" > Credentials > Create OAuth client ID > Configure Screen > Create Oauth Client ID > Download credentialsOauth2.json
+
+	> Library > Gmail API > Enable
+
+	> Gmail API > Admin > Audience > Add Users > our email
+
+install for agente_ia_langchain.py: "pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib"
 
 
 git push origin main
