@@ -1,12 +1,12 @@
-from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
-from langchain_core.prompts import ChatPromptTemplate
+from langgraph.prebuilt import create_react_agent
+from langgraph.checkpoint.memory import MemorySaver
 from langchain.chat_models import init_chat_model
 from langchain_community.agent_toolkits import GmailToolkit
 import os
-from pathlib import Path
 from langchain_core.tools import tool
 import base64
 from email.mime.text import MIMEText
+from pathlib import Path
 from langchain_community.tools.gmail.utils import (
     get_gmail_credentials,
     build_resource_service,
@@ -45,6 +45,7 @@ def create_gmail_reply_draft(message: str, to: str, subject: str, thread_id: str
         gmail_toolkit = GmailToolkit(api_resource=api_resource)
 
         # Obtener service de Gmail del toolkit
+        gmail_toolkit = GmailToolkit()
         service = gmail_toolkit.api_resource
 
         # Crear mensaje MIME con headers de respuesta
@@ -80,13 +81,19 @@ def create_gmail_reply_draft(message: str, to: str, subject: str, thread_id: str
     except Exception as e:
         return f"Error creando borrador de respuesta: {str(e)}"
 
-# Configurar el toolkit de Gmail
+# 1. Resolver la definición del modelo en Pydantic v2
+GmailToolkit.model_rebuild()
+
+# 2. Inicializar el servicio de Gmail si tienes credenciales (credentials.json / token.json)
+# Si usas autenticación local por OAuth:
 credentials = get_gmail_credentials(
     token_file="token.json",
     scopes=["https://mail.google.com/"],
     client_secrets_file="C:\\Users\\Mario\\Documents\\Temporal\\credentials.json",
 )
 api_resource = build_resource_service(credentials=credentials)
+
+# Configurar el toolkit de Gmail
 gmail_toolkit = GmailToolkit(api_resource=api_resource)
 tools = gmail_toolkit.get_tools()
 tools.append(create_gmail_reply_draft)
@@ -95,11 +102,8 @@ tools.append(create_gmail_reply_draft)
 #model = init_chat_model("openai:gpt-4o", temperature=0)
 model = init_chat_model("google_genai:gemini-3.5-flash-lite", temperature=0)
 
-
-#create_gmail_reply_draft acepta "to:str", create_gmail_draft acepta "to: List[str]"
 # Prompt de agente que define su comportamiento
-prompt = ChatPromptTemplate.from_messages([
-    ("system", """Eres un asistente de email profesional. Para procesar emails sigue EXACTAMENTE estos pasos:
+system_prompt = """Eres un asistente de email profesional. Para procesar emails sigue EXACTAMENTE estos pasos:
 
     1. PRIMERO: Usa 'search_gmail' con query 'in:inbox' para obtener la lista de mensajes en la bandeja de entrada.
     
@@ -115,14 +119,14 @@ prompt = ChatPromptTemplate.from_messages([
     
     5. QUINTO: Genera una respuesta profesional y apropiada en español.
     
-    6. SEXTO: Usa 'create_gmail_reply_draft' para crear un borrador de RESPUESTA (no email nuevo) con:
+    6. SEXTO: Usa 'create_gmail_draft' para crear un borrador de RESPUESTA (no email nuevo) con:
        - "message": tu respuesta generada
        - "subject": "Re: [asunto original]" (si no empieza ya con "Re:")
        - "to": email del remitente original
        - "thread_id": el Thread ID extraído del paso 4 (MUY IMPORTANTE para que sea una respuesta)
 
     CRÍTICO PARA RESPUESTAS:
-    - SIEMPRE incluye "thread_id" en create_gmail_reply_draft para que sea una respuesta, no un email nuevo
+    - SIEMPRE incluye "thread_id" en create_gmail_draft para que sea una respuesta, no un email nuevo
     - El "to" debe ser el email del remitente original
     - El "subject" debe empezar con "Re:" si no lo tiene ya
 
@@ -132,29 +136,27 @@ prompt = ChatPromptTemplate.from_messages([
     - Sin thread_id, el borrador será un email nuevo, no una respuesta
     - Si no encuentras thread_id, informa el problema pero intenta crear el borrador igual
     
-    Si encuentras errores, explica qué información falta y por qué."""),
-    ("human", "{input}"),
-    ("placeholder", "{agent_scratchpad}"),
-])
+    Si encuentras errores, explica qué información falta y por qué."""
 
 # Crear agente
-agent = create_tool_calling_agent(model, tools, prompt)
-
-# Crear executor del agente
-agent_executor = AgentExecutor(
-    agent=agent,
-    tools=tools,
-    verbose=True,
-    handle_parsing_errors=True,
-    max_iterations=10 # Limitar iteraciones para evitar bucles *loops
+memory = MemorySaver()
+agent_executor = create_react_agent(
+    model,
+    tools,
+    prompt=system_prompt,
+    checkpointer=memory,
 )
 
 def process_latest_email():
     try:
-        response = agent_executor.invoke({
-            "input": "Procesa el email más reciente en la bandeja de entrada y genera un borrador de respuesta profesional."
-        })
-        return response['output']
+        # Configurar el estado inicial
+        config = {"configurable": {"thread_id": "gmail-processing"}}
+        
+        response = agent_executor.invoke(
+            {"messages": [("human", "Procesa el email más reciente en la bandeja de entrada y genera un borrador de respuesta profesional.")]},
+             config=config
+        )
+        return response['messages'][-1].content
     except Exception as e:
         print(f"Error al procesar email: {str(e)}")
         return f"Error {str(e)}"
