@@ -31,6 +31,7 @@ class Config:
     def validate_required_config(cls):
         required_keys = [
             ("OPENAI_API_KEY", cls.OPENAI_API_KEY),
+            ("GOOGLE_API_KEY", cls.GOOGLE_API_KEY),
             ("TAVILY_API_KEY", cls.TAVILY_API_KEY),
             ("VIRUSTOTAL_API_KEY", cls.VIRUSTOTAL_API_KEY)
         ]
