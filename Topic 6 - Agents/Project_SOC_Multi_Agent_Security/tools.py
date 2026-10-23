@@ -6,6 +6,8 @@ from langchain.tools import tool
 from config import config
 from datetime import datetime
 
+# 1
+
 # Validar configuracion al importar
 config.validate_required_config()
 
@@ -71,4 +73,4 @@ Análisis: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
         return f"Error VirusTotal: {str(e)}"
     
 # Lista de herramientas para importacion
-all_tools = [search_tool, virustotal_checker] + gmail_tools
+all_tools = [search_tool, virustotal_checker] + gmail_tools #En gmail vienen varias

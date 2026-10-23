@@ -98,12 +98,13 @@ install for agente_ia_langchain.py: "pip install --upgrade google-api-python-cli
 
 install langgraph-supervisor for multiagents "pip install langgraph-supervisor"
 
-
 Project:
 
 Google "tavily API key" > register and get API key
 
 Google "virustotal API key" > register and get API key
+
+Install virustotal, dotenv for python and tavily "pip install python-dotenv vt-py langchain-tavily fastapi uvicorn"
 
 
 git push origin main
