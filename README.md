@@ -106,6 +106,7 @@ Google "virustotal API key" > register and get API key
 
 Install virustotal, dotenv for python and tavily "pip install python-dotenv vt-py langchain-tavily fastapi uvicorn"
 
+Run streamlit "streamlit run .\dashboard.py"
 
 Activate venv ".\venv_312\Scripts\Activate.ps1"
 
