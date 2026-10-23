@@ -1,4 +1,5 @@
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph_supervisor import create_supervisor
 from agents import alert_analyzer, threat_analyzer, notification_agent
 from config import config
@@ -8,11 +9,12 @@ import json
 # 3
 
 # Inicializar el modelo para el supervisor
-supervisor_model = ChatOpenAI(
-    model="gpt-4o-mini",
-    api_key=config.OPENAI_API_KEY,
-    temperature=0.1
-)
+# supervisor_model = ChatOpenAI(
+#     model="gpt-4o-mini",
+#     api_key=config.OPENAI_API_KEY,
+#     temperature=0.1
+# )
+supervisor_model = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0.3)
 
 def build_soc_workflow():
 
@@ -47,11 +49,11 @@ FORMATO DE DELEGACIÓN:
 - "PROCESO COMPLETADO"
 
 Si un agente ya fue ejecutado, NO volver a ejecutarlo.""",
-        add_handoff_back_messages=True,
-        output_mode="full_history"
+        add_handoff_back_messages=True, #Cuando invoke un agente le va a proporcionar toda la información que devuelve el anterior
+        output_mode="full_history" #El resultado nos devuelve todo el listado con todas las interacciones entre los agentes
     )
 
-    return supervisor.compile()
+    return supervisor.compile() #Compilamos el grafo que genera create_supervisor
 
 # Instancia global del workflow del supervisor
 soc_workflow = build_soc_workflow()

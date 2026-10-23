@@ -7,6 +7,8 @@ from datetime import datetime
 from supervisor import process_security_alert
 from config import config
 
+# 4
+
 # Validar configuración al iniciar
 try:  
     config.validate_required_config()
@@ -199,6 +201,7 @@ if __name__ == "__main__":
     
     print("\n🚀 Servidor listo para procesar alertas reales!")
     print("📊 Dashboard: http://localhost:8501")
+    print("📊 API docs: http://localhost:8000/docs")
     print("🌐 API Health: http://localhost:8000/health")
     
     uvicorn.run(app, host="0.0.0.0", port=config.WEBHOOK_PORT)
