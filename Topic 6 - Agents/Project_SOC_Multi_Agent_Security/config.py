@@ -43,4 +43,4 @@ class Config:
         
         return True
     
-config = Config()
+config = Config() #Con esto podemos cargarlo en otros ficheros
