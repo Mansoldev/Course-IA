@@ -1,11 +1,12 @@
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv #Carga el entorno con load_dotenv(), los obtenemos con os.getenv("NOMBRE_CLAVE_.ENV")
 
 load_dotenv()
 
 class Config:
     # API Keys principales
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") #Lo obtenemos del entorno, no de .env
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") #Lo obtenemos del entorno, no de .env
     TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
     VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY")
     
