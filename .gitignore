@@ -1,3 +1,3 @@
 token.json
-/Topic 6 - Agents/Project_SOC_Multi_Agent_Security/.env
 *.env
+*credentialsOauth2.json
