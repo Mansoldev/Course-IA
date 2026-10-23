@@ -2,7 +2,7 @@
 
 Course profesional Apps with LLMs, IAG and Agents with LangChain, LangGraph and Python.
 
-We only need python installed.
+We only need python installed
 
 ## Topic 1 - Langchain
 
@@ -106,5 +106,7 @@ Google "virustotal API key" > register and get API key
 
 Install virustotal, dotenv for python and tavily "pip install python-dotenv vt-py langchain-tavily fastapi uvicorn"
 
+
+Activate venv ".\venv_312\Scripts\Activate.ps1"
 
 git push origin main

@@ -5,6 +5,8 @@ from config import config
 from datetime import datetime
 import json
 
+# 3
+
 # Inicializar el modelo para el supervisor
 supervisor_model = ChatOpenAI(
     model="gpt-4o-mini",

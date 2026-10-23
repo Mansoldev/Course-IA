@@ -1,14 +1,18 @@
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.prebuilt import create_react_agent
 from tools import search_tool, virustotal_checker, gmail_tools
 from config import config
 
+# 2
+
 # Inicializar LLM
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
-    api_key=config.OPENAI_API_KEY,
-    temperature=0.1
-)
+# llm = ChatOpenAI(
+#     model="gpt-4o-mini",
+#     api_key=config.OPENAI_API_KEY,
+#     temperature=0.1
+# )
+llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0.3)
 
 # Agente 1: Analisis de Alertas 
 alert_analyzer = create_react_agent(
