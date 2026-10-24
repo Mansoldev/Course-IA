@@ -145,3 +145,5 @@ Activate gmail: Go to google cloud console > use the project
 	> Library > Gmail API > Enable
 
 	> Gmail API > Admin > Audience > Add Users > our email
+
+Install PyPDF2 for resource_template "pip install PyPDF2"
