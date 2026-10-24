@@ -12,6 +12,8 @@ from email.mime.text import MIMEText
 import os.path
 import pickle
 
+# Recurso: datos de solo lectura que el servidor pone a disposición de la aplicación y del llm, a diferencia de las herramientas, no deben ejecutar acciones, solo proporcionar info.
+
 # Configuración
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
           'https://www.googleapis.com/auth/gmail.send']
