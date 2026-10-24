@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "BDVideogamesStore": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "C:\\Users\\santiago\\mcp_course\\section_2",
+        "run",
+        "mcp_server.py"
+      ]
+    },
+    "GmailManager": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "C:\\Users\\santiago\\mcp_course\\section_3",
+        "run",
+        "gmail_mcp_server.py"
+      ]
+    }
+  }   
+}
