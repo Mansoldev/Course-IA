@@ -6,8 +6,8 @@
         "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "C:\\Users\\Mario\\Desktop",
-        "C:\\Users\\Mario\\Downloads"
+        "C:\\Users\\Lara\\Desktop",
+        "C:\\Users\\Lara\\Downloads"
       ]
     }
   }
