@@ -6,6 +6,8 @@ We only need python installed
 
 ## Topic 1 - Langchain
 
+langchain docs: "[docs.langchain.com/oss/python/learn](https://docs.langchain.com/oss/python/learn)"
+
 Create a folder for the aplication "course_langchain".
 
 Create a virtual environent for the course "python -m venv venv".
@@ -123,3 +125,5 @@ Local MCP server list (verify the creator) "[github.com/modelcontextprotocol/ser
 Remote MCP servers "[mcpservers.org/es/remote-mcp-servers](https://mcpservers.org/es/remote-mcp-servers)"
 
 install uv "Google: uv python install"
+
+install mcp fastmcp to create mcp servers, 2 versions "uv pip install mcp[cli] fastmcp"
