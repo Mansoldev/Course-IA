@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\Lara\\Desktop",
+        "C:\\Users\\Lara\\Downloads"
+      ]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_DB_PATH": "C:\\Users\\Lara\\Desktop\\memory.sqlite"
+      }
+    },
+    "sqliteMALNOFUNCA": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-sqlite",
+        "--db-path",
+        "C:\\Lara\\Course-IA\\MCP\\videogames_workshop\\tienda_videojuegos.db"
+      ]
+    },
+    "sqlite": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-server-sqlite-npx",
+        "C:\\Lara\\Course-IA\\MCP\\videogames_workshop\\tienda_videojuegos.db"
+      ]
+    }
+  }
+}
+

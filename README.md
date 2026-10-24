@@ -118,4 +118,8 @@ Install MCP client, ej "[claude.com/es/download](https://claude.com/es/download)
 
 install Nodejs "[nodejs.org/en/download](https://nodejs.org/en/download)"
 
-MCP server list (verify the creator) "[github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers)"
+Local MCP server list (verify the creator) "[github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers)"
+
+Remote MCP servers "[mcpservers.org/es/remote-mcp-servers](https://mcpservers.org/es/remote-mcp-servers)"
+
+install uv "Google: uv python install"

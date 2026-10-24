@@ -82,7 +82,7 @@ def filter_important_messages(state: ChatState) -> dict:
   
     if len(messages) <= 8:
         return {}  
-      
+    
     # No necesita filtrado aún  
     important_messages = []
     regular_messages = []  
@@ -95,13 +95,13 @@ def filter_important_messages(state: ChatState) -> dict:
             "recuerda" in msg.content.lower() or
             "preferencia" in msg.content.lower() or
             len(msg.content) > 200  # Mensajes largos pueden ser importantes
-        )      
-      
+        )    
+    
         if is_important:
             important_messages.append(msg)
         else:
             regular_messages.append(msg)  
-          
+        
     # Mantener todos los importantes + los 4 regulares más recientes
     filtered_messages = important_messages + regular_messages[-4:]  
     return {"messages": filtered_messages}
@@ -112,7 +112,6 @@ def analyze_message_importance(state: ChatState) -> str:
         return "filter"
     return "continue"
 ```
-
 
 ### 3 - Memoria por Límite de Tokens
 
@@ -134,7 +133,7 @@ def manage_memory_by_tokens(state: ChatState, max_tokens: int = 2000) -> dict:
   
   	if total_tokens <= max_tokens:
         return {}  # No necesita gestión  
-    
+  
     # Estrategia: mantener primer mensaje (system) + mensajes más recientes
     if messages and isinstance(messages[0], SystemMessage):
         system_msg = messages[0]
@@ -144,7 +143,7 @@ def manage_memory_by_tokens(state: ChatState, max_tokens: int = 2000) -> dict:
         system_msg = None
         other_messages = messages
         current_tokens = 0  
-    
+  
     # Agregar mensajes desde el más reciente hasta alcanzar el límite
     selected_messages = []
     for msg in reversed(other_messages):
@@ -154,7 +153,7 @@ def manage_memory_by_tokens(state: ChatState, max_tokens: int = 2000) -> dict:
             current_tokens += msg_tokens
         else:
             break  
-        
+      
     # Reconstruir lista de mensajes
     final_messages = []
     if system_msg:
@@ -172,7 +171,6 @@ def check_token_limit(state: ChatState) -> str:
     return "continue"
 ```
 
-
 ### 4 - Memoria Híbrida por Tipo de Mensaje
 
 Aplica diferentes estrategias de retención según el tipo de mensaje, optimizando para diferentes patrones de uso.
@@ -186,7 +184,7 @@ def hybrid_memory_management(state: ChatState) -> dict:
   
   	if len(messages) <= 6:
         return {}  
-    
+  
     system_messages = []
     human_messages = []
     ai_messages = []  
@@ -199,7 +197,7 @@ def hybrid_memory_management(state: ChatState) -> dict:
             human_messages.append(msg)
         elif isinstance(msg, AIMessage):
             ai_messages.append(msg)  
-        
+      
     # Estrategias diferenciadas:
     # - Mantener TODOS los system messages
     # - Mantener los últimos 4 human messages
@@ -217,7 +215,6 @@ def hybrid_memory_management(state: ChatState) -> dict:
 	return {"messages": filtered_messages}
 ```
 
-
 ### 5 - Memoria con Ventana Deslizante Adaptativa
 
 Extiende la ventana deslizante básica con lógica adaptativa que ajusta el tamaño de la ventana según el contexto.
@@ -234,7 +231,7 @@ def adaptive_sliding_window(state: ChatState) -> dict:
   
   	if len(messages) <= window_size:
         return {}  
-    
+  
     # Mantener los mensajes más recientes
     recent_messages = messages[-window_size:]
 
@@ -256,15 +253,14 @@ def calculate_adaptive_window_size(state: ChatState) -> int:
         return base_size - 2  # Menos mensajes si son muy largos  
   
 	return base_size
-    
+  
 def determine_window_strategy(state: ChatState) -> str:
     """Decide qué estrategia de ventana usar"""
     if len(state["messages"]) > calculate_adaptive_window_size(state):
         return "adaptive_window"
-    
+  
     return "continue"
 ```
-
 
 ### 6 - Memoria con Prioridad de Contexto
 
@@ -279,7 +275,7 @@ def priority_context_memory(state: ChatState) -> dict:
   
   	if len(messages) <= 8:
         return {}  
-    
+  
     # Obtener temas de los últimos mensajes
     recent_content = " ".join([msg.content for msg in messages[-3:]])
     current_keywords = extract_keywords(recent_content)  
@@ -292,7 +288,7 @@ def priority_context_memory(state: ChatState) -> dict:
         recency_bonus = max(0, len(messages) - i) * 0.1
         total_score = relevance_score + recency_bonus
         scored_messages.append((total_score, msg))  
-    
+  
     # Mantener top 8 mensajes más relevantes
     scored_messages.sort(reverse=True)
     selected_messages = [msg for _, msg in scored_messages[:8]]  
@@ -318,7 +314,6 @@ def calculate_relevance(text: str, keywords: List[str]) -> float:
   
 	return matches / max(len(keywords), 1)
 ```
-
 
 ## Mejores Prácticas
 
