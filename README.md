@@ -127,3 +127,7 @@ Remote MCP servers "[mcpservers.org/es/remote-mcp-servers](https://mcpservers.or
 install uv "Google: uv python install"
 
 install mcp fastmcp to create mcp servers, 2 versions "uv pip install mcp[cli] fastmcp"
+
+For MCP test "fastmcp dev inspector .\mcp_server.py"
+
+Test with no package "npx @modelcontextprotocol/inspector [uvx o npx] mcp-server-sqlite --dbpath E:\\GITHUB\\Course-IA\\MCP\\videogames_workshop\\tienda_videojuegos.db"

@@ -7,7 +7,7 @@ from pathlib import Path
 mcp = FastMCP("Videogames Store")
 
 current_dir = Path(__file__).parent
-DB_PATH = str(current_dir / "videogames_workshop\\tienda_videojuegos.db")
+DB_PATH = str(current_dir / "tienda_videojuegos.db")
 
 def conectar_bd():
     """Conecta a la base de datos SQLite"""
@@ -128,4 +128,5 @@ def ejecutar_consulta(sql: str) -> List[Dict[str, Any]]:
 
 # Start point
 if __name__ == "__main__":
-    mcp.run()
+    #solo rellenamos run si vamos a permitir conexiones remotas
+    mcp.run(transport="http", host="127.0.0.1", port=8080, path="/mcp") 
