@@ -338,7 +338,7 @@ class GmailMCPClient:
                     # 4. Enviar el resultado de vuelta a Gemini para que genere la respuesta final
                     # (Esto se puede estructurar como un chat continuo o una segunda llamada pasándole el historial)
                     final_response = self.gemini_client.models.generate_content(
-                        model="gemini-2.5-flash",
+                        model="gemini-3.5-flash-lite",
                         contents=[
                             contents,
                             response.text or "", # Mensaje del modelo con la intención de llamada
