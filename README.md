@@ -111,3 +111,11 @@ Run streamlit "streamlit run .\dashboard.py"
 Activate venv ".\venv_312\Scripts\Activate.ps1"
 
 git push origin main
+
+# MCP
+
+Install MCP client, ej "[claude.com/es/download](https://claude.com/es/download)" > Add MCP filesystem local, use claude_desktop_config
+
+install Nodejs "[nodejs.org/en/download](https://nodejs.org/en/download)"
+
+MCP server list (verify the creator) "[github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers)"

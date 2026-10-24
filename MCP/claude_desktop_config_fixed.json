@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\Mario\\Desktop",
+        "C:\\Users\\Mario\\Downloads"
+      ]
+    }
+  }
+}
+
