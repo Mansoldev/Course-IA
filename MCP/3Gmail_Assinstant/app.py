@@ -132,9 +132,12 @@ if "use_prompt" in st.session_state:
         prompt_msg = asyncio.run(client.get_prompt_messages(prompt_name, **params))
     
     # Mostrar el mensaje del usuario
-    st.session_state.messages.append({"role": "user", "content": prompt_msg["content"]["text"]})
+    #st.session_state.messages.append({"role": "user", "content": prompt_msg["content"]["text"]})
+    # CORRECCIÓN Como prompt_msg ya es un string (str), lo guardamos y mostramos directamente
+    st.session_state.messages.append({"role": "user", "content": prompt_msg})
     with st.chat_message("user"):
-        st.markdown(prompt_msg["content"]["text"])
+        #st.markdown(prompt_msg["content"]["text"])
+        st.markdown(prompt_msg)
     
     # Obtener respuesta del assistant
     with st.chat_message("assistant"):
