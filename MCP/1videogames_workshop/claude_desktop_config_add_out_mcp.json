@@ -20,7 +20,7 @@
         "command": "uv",
         "args": [
             "--directory",
-            "E:\\GITHUB\\Course-IA\\MCP\\videogames_workshop",
+            "E:\\GITHUB\\Course-IA\\MCP\\1videogames_workshop",
             "run",
             "mcp_server.py"
         ]
