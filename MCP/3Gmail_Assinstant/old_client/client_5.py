@@ -52,6 +52,23 @@ class GmailMCPClient:
             
             return openai_tools, cliente
 
+    async def get_tools_for_gemini(self):
+        """Convierte herramientas MCP a formato Google GenAI (Gemini)"""
+        async with await self._get_mcp_client() as cliente:
+            tools = await cliente.list_tools()
+
+            gemini_declarations = []
+            for tool in tools:
+                # Estructura compatible con function declarations de Gemini
+                gemini_declarations.append({
+                    "name": tool.name,
+                    "description": tool.description or "",
+                    "parameters": tool.inputSchema
+                })
+            
+            # Retorna la estructura de herramientas envuelta para GenAI y el cliente vivo
+            return [{"function_declarations": gemini_declarations}], cliente
+
     async def get_resources_as_tools_for_gemini(self):
         """Encapsula recursos y templates como herramientas en formato compatible con Gemini."""
         async with await self._get_mcp_client() as cliente:
