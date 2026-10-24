@@ -1,3 +1,4 @@
 token.json
 *.env
 *credentialsOauth2.json
+*credentials_mcp_gmail.json

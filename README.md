@@ -137,3 +137,11 @@ Test with no package "npx @modelcontextprotocol/inspector [uvx o npx] mcp-server
 ## Topic 2
 
 install mcp packages "uv pip install fastmcp google-auth-oauthlib google-api-python-client"
+
+Activate gmail: Go to google cloud console > use the project
+
+	> Menu "APIs and services" > Credentials > Create OAuth client ID > Configure Screen > Create Oauth Client ID > Download credentialsOauth2.json
+
+	> Library > Gmail API > Enable
+
+	> Gmail API > Admin > Audience > Add Users > our email
