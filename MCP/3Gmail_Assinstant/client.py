@@ -285,6 +285,8 @@ class GmailMCPClient:
     #                 messages=messages
     #             )
 
+    #            return second_response.choices[0].messages.content
+
     # Para Gemini
     async def chat(self, contents: list | str) -> str:
         """Procesa una conversación con Gemini utilizando MCP"""
@@ -301,7 +303,7 @@ class GmailMCPClient:
 
             # 2. Llamada inicial a Gemini
             response = self.gemini_client.models.generate_content(
-                model="gemini-2.5-flash",  # O el modelo que prefieras (ej: gemini-2.5-pro)
+                model="gemini-3.5-flash-lite",  # O el modelo que prefieras (ej: gemini-2.5-pro)
                 contents=contents,
                 config={
                     "tools": gemini_tools

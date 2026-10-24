@@ -68,3 +68,109 @@ with st.sidebar:
         st.caption(f"Total: {len(info['prompts'])}")
         for prompt in info['prompts']:
             st.markdown(f"• `{prompt}`")
+
+# Chat interface
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Función para mostrar respuestas con recursos MCP
+def display_message(content: str, role: str = "assistant"):
+    """Detecta y formatea respuestas que contienen recursos MCP"""
+    # Validar que content no sea None o vacío
+    if not content or content.strip() == "":
+        return  # No mostrar nada si está vacío
+    
+    # Detectar si es una respuesta con recurso MCP (buscar patrones comunes)
+    lines = content.split('\n')
+    
+    # Si es un mensaje de tool, mostrarlo en expander
+    if role == "tool":
+        # Buscar título en las primeras líneas
+        title = "📡 Resultado de herramienta"
+        if len(lines) > 0 and lines[0].startswith('# '):
+            title = f"📡 {lines[0].replace('# ', '')}"
+            content = '\n'.join(lines[1:])
+        
+        with st.expander(title, expanded=False):
+            st.markdown(content)
+    # Buscar encabezados de recursos (# Titulo)
+    elif len(lines) > 5 and lines[0].startswith('# '):
+        # Es un recurso MCP, mostrarlo en expander
+        title = lines[0].replace('# ', '')
+        rest_content = '\n'.join(lines[1:])
+        
+        with st.expander(f"📄 {title}", expanded=False):
+            st.markdown(rest_content)
+    else:
+        # Respuesta normal
+        st.markdown(content)
+
+# Mostrar historial
+for msg in st.session_state.messages:
+    msg_role = msg.get("role")
+    msg_content = msg.get("content")
+    
+    # Si es un mensaje tool, mostrarlo bajo el contexto del assistant
+    if msg_role == "tool":
+        with st.chat_message("assistant"):
+            display_message(msg_content, role="tool")
+    # Para mensajes de usuario y assistant
+    elif msg_role in ["user", "assistant"]:
+        # Saltar assistant vacíos (solo con tool_calls)
+        if msg_role == "assistant" and (not msg_content or msg_content.strip() == ""):
+            continue
+        
+        with st.chat_message(msg_role):
+            display_message(msg_content, role=msg_role)
+
+# Manejar prompts
+if "use_prompt" in st.session_state:
+    prompt_name = st.session_state.pop("use_prompt")
+    params = st.session_state.pop("prompt_params", {})
+    
+    with st.spinner("Cargando prompt..."):
+        prompt_msg = asyncio.run(client.get_prompt_messages(prompt_name, **params))
+    
+    # Mostrar el mensaje del usuario
+    st.session_state.messages.append({"role": "user", "content": prompt_msg["content"]["text"]})
+    with st.chat_message("user"):
+        st.markdown(prompt_msg["content"]["text"])
+    
+    # Obtener respuesta del assistant
+    with st.chat_message("assistant"):
+        with st.spinner("Pensando..."):
+            response = asyncio.run(client.chat(st.session_state.messages))
+        # Solo mostrar si hay contenido
+        if response and response.strip():
+            display_message(response, role="assistant")
+    
+    # Guardar respuesta solo si no está vacía
+    if response and response.strip():
+        st.session_state.messages.append({"role": "assistant", "content": response})
+    
+    st.rerun()
+
+# Input de usuario
+if prompt := st.chat_input("Escribe tu mensaje..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    
+    with st.chat_message("assistant"):
+        with st.spinner("Pensando..."):
+            response = asyncio.run(client.chat(st.session_state.messages))
+        # Solo mostrar si hay contenido
+        if response and response.strip():
+            display_message(response, role="assistant")
+    
+    # Guardar respuesta solo si no está vacía
+    if response and response.strip():
+        st.session_state.messages.append({"role": "assistant", "content": response})
+    
+    st.rerun()
+
+# Footer
+st.divider()
+#st.caption("Gmail Assistant powered by MCP + GPT-4o-mini")
+st.caption("Gmail Assistant powered by MCP + Gemini-3.5-flash-lite")
