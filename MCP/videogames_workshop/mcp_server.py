@@ -128,5 +128,8 @@ def ejecutar_consulta(sql: str) -> List[Dict[str, Any]]:
 
 # Start point
 if __name__ == "__main__":
+    mcp.run()
     #solo rellenamos run si vamos a permitir conexiones remotas
-    mcp.run(transport="http", host="127.0.0.1", port=8080, path="/mcp") 
+    #mcp.run(transport="http", host="127.0.0.1", port=8080, path="/mcp") 
+
+    #Añadir pyproject para poder usarlo en otros entornos como claude

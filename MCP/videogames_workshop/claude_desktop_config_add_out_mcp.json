@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\Lara\\Desktop",
+        "C:\\Users\\Lara\\Downloads"
+      ]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_DB_PATH": "C:\\Users\\Lara\\Desktop\\memory.sqlite"
+      }
+    },
+    "BDVideogamesStore": {
+        "command": "uv",
+        "args": [
+            "--directory",
+            "E:\\GITHUB\\Course-IA\\MCP\\videogames_workshop",
+            "run",
+            "mcp_server.py"
+        ]
+    }
+  }
+}
+
