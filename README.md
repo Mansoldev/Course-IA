@@ -147,3 +147,11 @@ Activate gmail: Go to google cloud console > use the project
 	> Gmail API > Admin > Audience > Add Users > our email
 
 Install PyPDF2 for resource_template "pip install PyPDF2"
+
+## Topic 3
+
+Go to OpenAI "[platform.openai.com/home](https://platform.openai.com/home)" > create and use project
+
+	> Menu "API keys" > Add key > download
+
+I Use google gemini because it's free
