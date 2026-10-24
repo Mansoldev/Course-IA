@@ -1,14 +1,20 @@
 {
   "mcpServers": {
     "filesystem": {
-      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "command": "npx",
       "args": [
-        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
         "-y",
         "@modelcontextprotocol/server-filesystem",
         "C:\\Users\\Lara\\Desktop",
         "C:\\Users\\Lara\\Downloads"
       ]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_DB_PATH": "C:\\Users\\Lara\\Desktop\\memory.sqlite"
+      }
     }
   }
 }
