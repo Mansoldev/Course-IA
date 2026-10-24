@@ -124,6 +124,8 @@ Local MCP server list (verify the creator) "[github.com/modelcontextprotocol/ser
 
 Remote MCP servers "[mcpservers.org/es/remote-mcp-servers](https://mcpservers.org/es/remote-mcp-servers)"
 
+## Topic 1
+
 install uv "Google: uv python install"
 
 install mcp fastmcp to create mcp servers, 2 versions "uv pip install mcp[cli] fastmcp"
@@ -131,3 +133,7 @@ install mcp fastmcp to create mcp servers, 2 versions "uv pip install mcp[cli] f
 For MCP test "fastmcp dev inspector .\mcp_server.py"
 
 Test with no package "npx @modelcontextprotocol/inspector [uvx o npx] mcp-server-sqlite --dbpath E:\\GITHUB\\Course-IA\\MCP\\videogames_workshop\\tienda_videojuegos.db"
+
+## Topic 2
+
+install mcp packages "uv pip install fastmcp google-auth-oauthlib google-api-python-client"
