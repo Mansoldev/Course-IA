@@ -17,7 +17,7 @@ client = get_client()
 
 # Titulo
 st.title("📧 Gmail Assistant con MCP")
-st.markdown("Asistente inteligente para gestionar tu Gmail usando GPT-4o-mini")
+st.markdown("Asistente inteligente para gestionar tu Gmail usando Ollama")
 
 # Sidebar para mostrar informacion del cliente MCP
 with st.sidebar:
@@ -176,4 +176,4 @@ if prompt := st.chat_input("Escribe tu mensaje..."):
 # Footer
 st.divider()
 #st.caption("Gmail Assistant powered by MCP + GPT-4o-mini")
-st.caption("Gmail Assistant powered by MCP + Gemini-3.5-flash-lite")
+st.caption("Gmail Assistant powered by MCP + Ollama")
