@@ -6,6 +6,7 @@ Requiere: uv pip install fastmcp google-auth-oauthlib google-api-python-client
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.jwt import JWTVerifier, RSAKeyPair
 from fastmcp.server.middleware import Middleware, MiddlewareContext
+from fastmcp.exceptions import ToolError, ResourceError, PromptError
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
@@ -15,8 +16,12 @@ import os.path
 import pickle
 import json
 from pydantic import SecretStr
-import jwt
 from typing import Optional
+import jwt
+import logging
+
+logging.getLogger('asyncio').setLevel(logging.CRITICAL)
+
 
 # Configuración
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
@@ -126,7 +131,7 @@ class AuthorizationMiddleware(Middleware):
         except Exception as e:
             print(f"Error al extraer el usuario: {e}")
             return None
-        
+
     def get_user_permissions(self, user: str) -> dict:
         """Obtiene los permisos del usuario basados en su rol"""
         role = self.user_roles.get(user, "reader")
@@ -153,6 +158,144 @@ class AuthorizationMiddleware(Middleware):
             return False
 
         return component_name in allowed_components
+    
+    async def on_call_tool(self, context: MiddlewareContext, call_next):
+        """Intercepta llamadas a tools y valida permisos"""
+        user = self.get_user_from_context(context)
+        tool_name = context.message.name
+
+        if not self.has_permission(user, "tools", tool_name):
+            raise ToolError(
+                f"No tienes suficientes permisos para ejecutar '{tool_name}'."
+                f"Tu rol actual no permite esta operación"
+            )
+        
+        print(f"{user} ejecutando tool: {tool_name}")
+        return await call_next(context)
+    
+    async def on_read_resource(self, context: MiddlewareContext, call_next):
+        """Intercepta acceso a resources y valida permisos"""
+        user = self.get_user_from_context(context)
+        resource_uri = str(context.message.uri)
+        
+        if not self.has_permission(user, "resources", resource_uri):
+            raise ResourceError(
+                f"❌ No tienes permisos para acceder a '{resource_uri}'. "
+                f"Tu rol actual no permite esta operación."
+            )
+        
+        print(f"✅ {user} leyendo resource: {resource_uri}")
+        return await call_next(context)
+    
+    async def on_get_prompt(self, context: MiddlewareContext, call_next):
+        """Intercepta acceso a prompts y valida permisos"""
+        user = self.get_user_from_context(context)
+        prompt_name = context.message.name
+        
+        if not self.has_permission(user, "prompts", prompt_name):
+            raise PromptError(
+                f"❌ No tienes permisos para usar el prompt '{prompt_name}'. "
+                f"Tu rol actual no permite esta operación."
+            )
+        
+        print(f"✅ {user} usando prompt: {prompt_name}")
+        return await call_next(context)
+    
+    async def on_list_tools(self, context: MiddlewareContext, call_next):
+        """Filtra la lista de tools según permisos del usuario"""
+        user = self.get_user_from_context(context)
+        all_tools = await call_next(context)
+        
+        if not user:
+            return []
+        
+        permissions = self.get_user_permissions(user)
+        allowed_tools = permissions.get("tools", [])
+        
+        # Filtrar tools permitidos
+        filtered_tools = [
+            tool for tool in all_tools 
+            if tool.name in allowed_tools
+        ]
+        
+        print(f"📋 {user} tiene acceso a {len(filtered_tools)}/{len(all_tools)} tools")
+        return filtered_tools
+    
+    async def on_list_resources(self, context: MiddlewareContext, call_next):
+        """Filtra la lista de resources según permisos del usuario"""
+        user = self.get_user_from_context(context)
+        all_resources = await call_next(context)
+        
+        if not user:
+            return []
+        
+        permissions = self.get_user_permissions(user)
+        allowed_resources = permissions.get("resources", [])
+        
+        # Filtrar resources permitidos
+        filtered_resources = [
+            resource for resource in all_resources 
+            if any(
+                str(resource.uri) == allowed or 
+                ('{' in allowed and str(resource.uri).startswith(allowed.split('{')[0]))
+                for allowed in allowed_resources
+            )
+        ]
+        
+        print(f"📋 {user} tiene acceso a {len(filtered_resources)}/{len(all_resources)} resources")
+        return filtered_resources
+    
+    async def on_list_resource_templates(self, context: MiddlewareContext, call_next):
+        """Filtra la lista de resource templates según permisos del usuario"""
+        user = self.get_user_from_context(context)
+        all_templates = await call_next(context)
+        
+        if not user:
+            print("⚠️  Sin usuario: retornando lista vacía de templates")
+            return []
+        
+        permissions = self.get_user_permissions(user)
+        allowed_resources = permissions.get("resources", [])
+        
+        # Filtrar templates permitidos
+        filtered_templates = []
+        
+        for template in all_templates:
+            # Intentar diferentes atributos posibles
+            template_uri = None
+            
+            if hasattr(template, 'uri_template'):
+                template_uri = str(template.uri_template)
+            elif hasattr(template, 'uriTemplate'):
+                template_uri = str(template.uriTemplate)
+            elif hasattr(template, 'name'):
+                # Último recurso: usar el nombre del template
+                template_uri = template.name
+            else:
+                print(f"⚠️  Template sin uri_template. Atributos: {dir(template)}")
+                continue
+            
+            # Verificar si este template está permitido
+            is_allowed = False
+            for allowed in allowed_resources:
+                if '{' in allowed:
+                    # Es un template pattern, verificar coincidencia
+                    allowed_base = allowed.split('{')[0]
+                    template_base = template_uri.split('{')[0] if '{' in template_uri else template_uri
+                    
+                    if template_base == allowed_base or template_uri == allowed:
+                        is_allowed = True
+                        break
+                elif template_uri == allowed or template_uri.startswith(allowed):
+                    # Coincidencia exacta o prefijo
+                    is_allowed = True
+                    break
+            
+            if is_allowed:
+                filtered_templates.append(template)
+        
+        print(f"📋 {user} tiene acceso a {len(filtered_templates)}/{len(all_templates)} templates")
+        return filtered_templates
 
 # ==================== AUTH ====================
 
@@ -182,7 +325,7 @@ def get_or_create_keypair():
                 'public_key': public_key_str
             }, f, indent=2)
         return keypair
-
+    
 # Generar/cargar el par de claves
 keypair = get_or_create_keypair()
 
@@ -218,6 +361,13 @@ auth = JWTVerifier(
 
 # Crear servidor con auth
 mcp = FastMCP("Gmail Manager", auth=auth)
+
+# Agreagar el middleware al servidor mcp
+mcp.add_middleware(AuthorizationMiddleware(
+    public_key=public_key_str,
+    issuer="gmail-mcp-server",
+    audience="gmail-mcp"
+))
 
 # ==================== FUNCIONES GMAIL ====================
 
