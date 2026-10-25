@@ -65,7 +65,17 @@ with open('client_token.txt', 'w') as f:
 print(f"🔑 Token generado y guardado en client_token.txt")
 print(f"Token (primeros 50 caracteres): {client_token[:50]}...")
 
-mcp = FastMCP("Gmail Manager")
+# Configurar auth con JWTVerifier
+public_key_str = keypair.public_key
+
+auth = JWTVerifier(
+    public_key=public_key_str,
+    issuer="gmail-mcp-server",
+    audience="gmail-mcp"
+)
+
+# Crear servidor con auth
+mcp = FastMCP("Gmail Manager", auth=auth)
 
 # ==================== FUNCIONES GMAIL ====================
 
