@@ -51,7 +51,7 @@ class GmailMCPClient:
                     "function": {
                         "name": tool.name,
                         "description": tool.description or "",
-                        "parameters": tool.inputSchema
+                        "parameters": tool.input_schema
                     }
                 })
 
@@ -102,7 +102,7 @@ class GmailMCPClient:
 
             # 2. Resource templates
             for template in templates:
-                uri_template = str(template.uriTemplate)
+                uri_template = str(template.uri_template)
                 func_name = template.name
 
                 # Extraer parametros del template
@@ -373,29 +373,97 @@ class GmailMCPClient:
     #         return response.text
 
     #Para Ollama
+    # async def chat(self, messages: list) -> str:
+    #     """Procesa una conversación con GPT utilizando MCP"""
+    #     async with await self._get_mcp_client() as mcp:
+    #         # Obtener herramientas y recursos
+    #         tools, _ = await self.get_tools_for_llm()
+    #         resource_tools, resource_map = await self.get_resources_as_tools()
+    #         all_tools = tools + resource_tools
+
+    #         # LLamada inicial a Ollama
+    #         response = ollama.chat(
+    #             model=self.ollama_model,
+    #             messages=messages,
+    #             tools=all_tools
+    #         )
+
+    #         response_message = response['message']
+    #         tool_calls = response_message.get('tool_calls', [])
+
+    #         # Si no hay tool calls, retornar respuesta directa
+    #         if not tool_calls:
+    #             return response_message.get('content', '')
+
+    #         # Processar tool calls
+    #         messages.append({
+    #             "role": "assistant",
+    #             "content": response_message.get('content', ''),
+    #             "tool_calls": tool_calls
+    #         })
+
+    #         for tool_call in tool_calls:
+    #             function_name = tool_call['function']['name']
+    #             function_args = tool_call['function']['arguments']
+
+    #             # Verficar si es un recurso
+    #             if function_name in resource_map:
+    #                 resource_info = resource_map[function_name]
+
+    #                 if "template" in resource_info:
+    #                     # Resource template: construir URI
+    #                     uri = resource_info["template"]
+    #                     for param in resource_info["params"]:
+    #                         uri = uri.replace(f"{{{param}}}", str(function_args.get(param, "")))
+    #                 else:
+    #                     # REcurso estatico
+    #                     uri = resource_info['uri']
+
+    #                 function_response = await self.get_resource(uri, mcp)
+    #             else:
+    #                 # Herramienta normal
+    #                 function_response = await self.call_tool(function_name, function_args, mcp)
+
+    #             messages.append({
+    #                 "role": "tool",
+    #                 "content": "Tool response to add to context: " + function_response,
+    #                 "name": function_name
+    #             })
+
+    #             # Segunda llamada con resultados de la herramienta
+    #             second_response = ollama.chat(
+    #                 model=self.ollama_model,
+    #                 messages=messages
+    #             )
+
+    #         return second_response['message'].get('content', '')
+
+    #Para Ollama pero mas seguro:
     async def chat(self, messages: list) -> str:
-        """Procesa una conversación con GPT utilizando MCP"""
+        """Procesa una conversación con Ollama utilizando MCP de forma segura"""
         async with await self._get_mcp_client() as mcp:
-            # Obtener herramientas y recursos
             tools, _ = await self.get_tools_for_llm()
             resource_tools, resource_map = await self.get_resources_as_tools()
             all_tools = tools + resource_tools
 
-            # LLamada inicial a Ollama
-            response = ollama.chat(
-                model=self.ollama_model,
-                messages=messages,
-                tools=all_tools
-            )
+            try:
+                # Llamada inicial a Ollama
+                response = ollama.chat(
+                    model=self.ollama_model,
+                    messages=messages,
+                    tools=all_tools
+                )
+            except Exception as e:
+                return f"Error al conectar con Ollama: {str(e)}"
 
-            response_message = response['message']
+            response_message = response.get('message', {})
             tool_calls = response_message.get('tool_calls', [])
 
             # Si no hay tool calls, retornar respuesta directa
             if not tool_calls:
                 return response_message.get('content', '')
 
-            # Processar tool calls
+            # Procesar tool calls
             messages.append({
                 "role": "assistant",
                 "content": response_message.get('content', ''),
@@ -406,35 +474,31 @@ class GmailMCPClient:
                 function_name = tool_call['function']['name']
                 function_args = tool_call['function']['arguments']
 
-                # Verficar si es un recurso
                 if function_name in resource_map:
                     resource_info = resource_map[function_name]
-
                     if "template" in resource_info:
-                        # Resource template: construir URI
                         uri = resource_info["template"]
                         for param in resource_info["params"]:
                             uri = uri.replace(f"{{{param}}}", str(function_args.get(param, "")))
                     else:
-                        # REcurso estatico
                         uri = resource_info['uri']
 
                     function_response = await self.get_resource(uri, mcp)
                 else:
-                    # Herramienta normal
                     function_response = await self.call_tool(function_name, function_args, mcp)
 
                 messages.append({
                     "role": "tool",
-                    "content": "Tool response to add to context: " + function_response,
+                    "content": str(function_response),
                     "name": function_name
                 })
 
-                # Segunda llamada con resultados de la herramienta
+            try:
+                # Segunda llamada con los resultados de la herramienta
                 second_response = ollama.chat(
                     model=self.ollama_model,
                     messages=messages
                 )
-
-            return second_response['message'].get('content', '')
-
+                return second_response.get('message', {}).get('content', 'Respuesta vacía del modelo.')
+            except Exception as e:
+                return f"Error en la segunda llamada a Ollama: {str(e)}"

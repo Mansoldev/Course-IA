@@ -74,35 +74,53 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # Función para mostrar respuestas con recursos MCP
+# def display_message(content: str, role: str = "assistant"):
+#     """Detecta y formatea respuestas que contienen recursos MCP"""
+#     # Validar que content no sea None o vacío
+#     if not content or content.strip() == "":
+#         return  # No mostrar nada si está vacío
+    
+#     # Detectar si es una respuesta con recurso MCP (buscar patrones comunes)
+#     lines = content.split('\n')
+    
+#     # Si es un mensaje de tool, mostrarlo en expander
+#     if role == "tool":
+#         # Buscar título en las primeras líneas
+#         title = "📡 Resultado de herramienta"
+#         if len(lines) > 0 and lines[0].startswith('# '):
+#             title = f"📡 {lines[0].replace('# ', '')}"
+#             content = '\n'.join(lines[1:])
+        
+#         with st.expander(title, expanded=False):
+#             st.markdown(content)
+#     # Buscar encabezados de recursos (# Titulo)
+#     elif len(lines) > 5 and lines[0].startswith('# '):
+#         # Es un recurso MCP, mostrarlo en expander
+#         title = lines[0].replace('# ', '')
+#         rest_content = '\n'.join(lines[1:])
+        
+#         with st.expander(f"📄 {title}", expanded=False):
+#             st.markdown(rest_content)
+#     else:
+#         # Respuesta normal
+#         st.markdown(content)
+
+# Más seguro
 def display_message(content: str, role: str = "assistant"):
-    """Detecta y formatea respuestas que contienen recursos MCP"""
-    # Validar que content no sea None o vacío
-    if not content or content.strip() == "":
-        return  # No mostrar nada si está vacío
+    """Detecta y formatea respuestas de forma segura"""
+    if not content or not isinstance(content, str) or content.strip() == "":
+        st.markdown("*(Sin contenido que mostrar)*")
+        return
     
-    # Detectar si es una respuesta con recurso MCP (buscar patrones comunes)
     lines = content.split('\n')
-    
-    # Si es un mensaje de tool, mostrarlo en expander
     if role == "tool":
-        # Buscar título en las primeras líneas
         title = "📡 Resultado de herramienta"
         if len(lines) > 0 and lines[0].startswith('# '):
             title = f"📡 {lines[0].replace('# ', '')}"
             content = '\n'.join(lines[1:])
-        
         with st.expander(title, expanded=False):
             st.markdown(content)
-    # Buscar encabezados de recursos (# Titulo)
-    elif len(lines) > 5 and lines[0].startswith('# '):
-        # Es un recurso MCP, mostrarlo en expander
-        title = lines[0].replace('# ', '')
-        rest_content = '\n'.join(lines[1:])
-        
-        with st.expander(f"📄 {title}", expanded=False):
-            st.markdown(rest_content)
     else:
-        # Respuesta normal
         st.markdown(content)
 
 # Mostrar historial
