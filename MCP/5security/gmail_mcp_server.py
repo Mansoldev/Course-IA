@@ -107,7 +107,7 @@ class AuthorizationMiddleware(Middleware):
                     audience=self.audience
                 )
 
-                # Extraer el subject (usuario) del token
+                # Extraer el subject (usuario)
                 user_identity = payload.get("sub")
 
                 if user_identity:
@@ -126,6 +126,33 @@ class AuthorizationMiddleware(Middleware):
         except Exception as e:
             print(f"Error al extraer el usuario: {e}")
             return None
+        
+    def get_user_permissions(self, user: str) -> dict:
+        """Obtiene los permisos del usuario basados en su rol"""
+        role = self.user_roles.get(user, "reader")
+        return self.permissions.get(role, self.permissions['reader'])
+    
+    def has_permission(self, user: str, component_type: str, component_name: str) -> bool:
+        """Verifica si el usuario tiene permiso para acceder al componente del servidor MCP"""
+        if not user:
+            return False
+        
+        permissions = self.get_user_permissions(user)
+        allowed_components = permissions.get(component_type, [])
+
+        # Para resources con templates, verificar el patrón
+        if component_type == "resources":
+            for allowed in allowed_components:
+                if '{' in allowed:
+                    # Es un template, verificar el patron base
+                    base_pattern = allowed.split('{')[0]
+                    if component_name.startswith(base_pattern):
+                        return True
+                elif component_name == allowed:
+                    return True
+            return False
+
+        return component_name in allowed_components
 
 # ==================== AUTH ====================
 
