@@ -1,6 +1,7 @@
 from fastmcp import Client
 #from openai import OpenAI
-from google import genai
+# from google import genai
+import ollama
 from dotenv import load_dotenv
 import os
 from pathlib import Path
@@ -12,7 +13,9 @@ class GmailMCPClient:
     def __init__(self):
         # Clientes de IA
         #self.openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        #self.gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        self.ollama_model = os.getenv("OLLAMA_MODEL", "qwen3:8")
+        self.ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
         current_dir = Path(__file__).parent
         self.mcp_server_path = current_dir / "gmail_mcp_server.py"
 
@@ -36,7 +39,7 @@ class GmailMCPClient:
                 "server": self.mcp_server_path
             }
 
-    async def get_tools_for_openai(self):
+    async def get_tools_for_llm(self):
         """Convierte herramientas MCP a formato OpenAI"""
         async with await self._get_mcp_client() as cliente:
             tools = await cliente.list_tools()
@@ -305,67 +308,133 @@ class GmailMCPClient:
     #            return second_response.choices[0].messages.content
 
     # Para Gemini
-    async def chat(self, contents: list | str) -> str:
-        """Procesa una conversación con Gemini utilizando MCP"""
-        async with await self._get_mcp_client() as mcp:
-            # 1. Obtener herramientas de MCP en formato Gemini
-            tools_data, _ = await self.get_tools_for_gemini()
-            resource_tools, resource_map = await self.get_resources_as_tools_for_gemini()
+    # async def chat(self, contents: list | str) -> str:
+    #     """Procesa una conversación con Gemini utilizando MCP"""
+    #     async with await self._get_mcp_client() as mcp:
+    #         # 1. Obtener herramientas de MCP en formato Gemini
+    #         tools_data, _ = await self.get_tools_for_gemini()
+    #         resource_tools, resource_map = await self.get_resources_as_tools_for_gemini()
             
-            # Combinar todas las declaraciones de funciones para Gemini
-            # Nota: 'tools_data' ya es una lista con el diccionario {"function_declarations": [...]}
-            all_function_declarations = tools_data[0]["function_declarations"] + resource_tools[0]["function_declarations"]
+    #         # Combinar todas las declaraciones de funciones para Gemini
+    #         # Nota: 'tools_data' ya es una lista con el diccionario {"function_declarations": [...]}
+    #         all_function_declarations = tools_data[0]["function_declarations"] + resource_tools[0]["function_declarations"]
             
-            gemini_tools = [{"function_declarations": all_function_declarations}]
+    #         gemini_tools = [{"function_declarations": all_function_declarations}]
 
-            # 2. Llamada inicial a Gemini
-            response = self.gemini_client.models.generate_content(
-                model="gemini-3.5-flash-lite",  # O el modelo que prefieras (ej: gemini-2.5-pro)
-                contents=contents,
-                config={
-                    "tools": gemini_tools
-                }
+    #         # 2. Llamada inicial a Gemini
+    #         response = self.gemini_client.models.generate_content(
+    #             model="gemini-3.5-flash-lite",  # O el modelo que prefieras (ej: gemini-2.5-pro)
+    #             contents=contents,
+    #             config={
+    #                 "tools": gemini_tools
+    #             }
+    #         )
+
+    #         # 3. Comprobar si Gemini quiere llamar a una herramienta (Function Calling)
+    #         # El SDK de google-genai maneja las llamadas a funciones en response.function_calls
+    #         if response.function_calls:
+    #             for function_call in response.function_calls:
+    #                 tool_name = function_call.name
+    #                 tool_args = function_call.args
+                    
+    #                 tool_result = None
+                    
+    #                 # Verificar si es una herramienta normal del servidor MCP o un recurso encapsulado
+    #                 if tool_name in resource_map:
+    #                     # Es un recurso o template mapeado
+    #                     res_info = resource_map[tool_name]
+    #                     if "uri" in res_info:
+    #                         read_res = await mcp.read_resource(res_info["uri"])
+    #                         tool_result = read_res
+    #                     elif "template" in res_info:
+    #                         # Remplazar parámetros en el template del recurso
+    #                         uri_filled = res_info["template"]
+    #                         for k, v in tool_args.items():
+    #                             uri_filled = uri_filled.replace(f"{{{k}}}", str(v))
+    #                         read_res = await mcp.read_resource(uri_filled)
+    #                         tool_result = read_res
+    #                 else:
+    #                     # Es una herramienta normal de MCP (ej: list_emails, send_email)
+    #                     tool_result = await mcp.call_tool(tool_name, arguments=tool_args)
+                    
+    #                 # 4. Enviar el resultado de vuelta a Gemini para que genere la respuesta final
+    #                 # (Esto se puede estructurar como un chat continuo o una segunda llamada pasándole el historial)
+    #                 final_response = self.gemini_client.models.generate_content(
+    #                     model="gemini-3.5-flash-lite",
+    #                     contents=[
+    #                         contents,
+    #                         response.text or "", # Mensaje del modelo con la intención de llamada
+    #                         f"Resultado de la herramienta {tool_name}: {tool_result}"
+    #                     ]
+    #                 )
+    #                 return final_response.text
+
+    #         # Si no llamó a ninguna herramienta, devuelve el texto directamente
+    #         return response.text
+
+    #Para Ollama
+    async def chat(self, messages: list) -> str:
+        """Procesa una conversación con GPT utilizando MCP"""
+        async with await self._get_mcp_client() as mcp:
+            # Obtener herramientas y recursos
+            tools, _ = await self.get_tools_for_llm()
+            resource_tools, resource_map = await self.get_resources_as_tools()
+            all_tools = tools + resource_tools
+
+            # LLamada inicial a Ollama
+            response = ollama.chat(
+                model=self.ollama_model,
+                messages=messages,
+                tools=all_tools
             )
 
-            # 3. Comprobar si Gemini quiere llamar a una herramienta (Function Calling)
-            # El SDK de google-genai maneja las llamadas a funciones en response.function_calls
-            if response.function_calls:
-                for function_call in response.function_calls:
-                    tool_name = function_call.name
-                    tool_args = function_call.args
-                    
-                    tool_result = None
-                    
-                    # Verificar si es una herramienta normal del servidor MCP o un recurso encapsulado
-                    if tool_name in resource_map:
-                        # Es un recurso o template mapeado
-                        res_info = resource_map[tool_name]
-                        if "uri" in res_info:
-                            read_res = await mcp.read_resource(res_info["uri"])
-                            tool_result = read_res
-                        elif "template" in res_info:
-                            # Remplazar parámetros en el template del recurso
-                            uri_filled = res_info["template"]
-                            for k, v in tool_args.items():
-                                uri_filled = uri_filled.replace(f"{{{k}}}", str(v))
-                            read_res = await mcp.read_resource(uri_filled)
-                            tool_result = read_res
-                    else:
-                        # Es una herramienta normal de MCP (ej: list_emails, send_email)
-                        tool_result = await mcp.call_tool(tool_name, arguments=tool_args)
-                    
-                    # 4. Enviar el resultado de vuelta a Gemini para que genere la respuesta final
-                    # (Esto se puede estructurar como un chat continuo o una segunda llamada pasándole el historial)
-                    final_response = self.gemini_client.models.generate_content(
-                        model="gemini-3.5-flash-lite",
-                        contents=[
-                            contents,
-                            response.text or "", # Mensaje del modelo con la intención de llamada
-                            f"Resultado de la herramienta {tool_name}: {tool_result}"
-                        ]
-                    )
-                    return final_response.text
+            response_message = response['message']
+            tool_calls = response_message.get('tool_calls', [])
 
-            # Si no llamó a ninguna herramienta, devuelve el texto directamente
-            return response.text
+            # Si no hay tool calls, retornar respuesta directa
+            if not tool_calls:
+                return response_message.get('content', '')
+
+            # Processar tool calls
+            messages.append({
+                "role": "assistant",
+                "content": response_message.get('content', ''),
+                "tool_calls": tool_calls
+            })
+
+            for tool_call in tool_calls:
+                function_name = tool_call['function']['name']
+                function_args = tool_call['function']['arguments']
+
+                # Verficar si es un recurso
+                if function_name in resource_map:
+                    resource_info = resource_map[function_name]
+
+                    if "template" in resource_info:
+                        # Resource template: construir URI
+                        uri = resource_info["template"]
+                        for param in resource_info["params"]:
+                            uri = uri.replace(f"{{{param}}}", str(function_args.get(param, "")))
+                    else:
+                        # REcurso estatico
+                        uri = resource_info['uri']
+
+                    function_response = await self.get_resource(uri, mcp)
+                else:
+                    # Herramienta normal
+                    function_response = await self.call_tool(function_name, function_args, mcp)
+
+                messages.append({
+                    "role": "tool",
+                    "content": "Tool response to add to context: " + function_response,
+                    "name": function_name
+                })
+
+                # Segunda llamada con resultados de la herramienta
+                second_response = ollama.chat(
+                    model=self.ollama_model,
+                    messages=messages
+                )
+
+            return second_response['message'].get('content', '')
 
