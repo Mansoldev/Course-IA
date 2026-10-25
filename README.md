@@ -165,3 +165,5 @@ Search in Ollama and download and install an llm model: "Ollama run qwen:8b"
 Install Ollama conector "uv pip install ollama"
 
 ## Topic 5 - Security in MCP
+
+Need to open gmail_mcp_server.py and after that the streamlit app.
