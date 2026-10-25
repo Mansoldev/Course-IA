@@ -124,7 +124,7 @@ Local MCP server list (verify the creator) "[github.com/modelcontextprotocol/ser
 
 Remote MCP servers "[mcpservers.org/es/remote-mcp-servers](https://mcpservers.org/es/remote-mcp-servers)"
 
-## Topic 1
+## Topic 1 - MCP
 
 install uv "Google: uv python install"
 
@@ -134,7 +134,7 @@ For MCP test "fastmcp dev inspector .\mcp_server.py"
 
 Test with no package "npx @modelcontextprotocol/inspector [uvx o npx] mcp-server-sqlite --dbpath E:\\GITHUB\\Course-IA\\MCP\\videogames_workshop\\tienda_videojuegos.db"
 
-## Topic 2
+## Topic 2 - Resources and prompts
 
 install mcp packages "uv pip install fastmcp google-auth-oauthlib google-api-python-client"
 
@@ -148,7 +148,7 @@ Activate gmail: Go to google cloud console > use the project
 
 Install PyPDF2 for resource_template "pip install PyPDF2"
 
-## Topic 3
+## Topic 3 - Client MCP
 
 Go to OpenAI "[platform.openai.com/home](https://platform.openai.com/home)" > create and use project
 
@@ -163,3 +163,5 @@ Download and install Ollama "[ollama.com](https://ollama.com/)"
 Search in Ollama and download and install an llm model: "Ollama run qwen:8b"
 
 Install Ollama conector "uv pip install ollama"
+
+## Topic 5 - Security in MCP

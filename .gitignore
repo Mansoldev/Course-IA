@@ -5,3 +5,5 @@ token.json
 *credentials.json
 *__pycache__
 *token.pickle
+*mcp_keypair.json
+*client_token.txt
