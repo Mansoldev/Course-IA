@@ -130,7 +130,7 @@ install uv "Google: uv python install"
 
 install mcp fastmcp to create mcp servers, 2 versions "uv pip install mcp[cli] fastmcp"
 
-For MCP test "fastmcp dev inspector .\mcp_server.py"
+For MCP test "fastmcp dev inspector .\mcp_server.py" (ONLY ST
 
 Test with no package "npx @modelcontextprotocol/inspector [uvx o npx] mcp-server-sqlite --dbpath E:\\GITHUB\\Course-IA\\MCP\\videogames_workshop\\tienda_videojuegos.db"
 
@@ -167,3 +167,11 @@ Install Ollama conector "uv pip install ollama"
 ## Topic 5 - Security in MCP
 
 Need to open gmail_mcp_server.py and after that the streamlit app.
+
+test http server:
+
+	> First load server: python .\gmail_mcp_server.py
+
+	> load de inspector with: npx @modelcontextprotocol/inspector > [A](http://0.0.0.0:8000/mcp)dd server > streamable-http > http://0.0.0.0:8000/mcp
+
+	  - Add header > key "Authorization" > value "Bearer + final token txt"
