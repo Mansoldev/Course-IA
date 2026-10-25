@@ -7,3 +7,5 @@ token.json
 *token.pickle
 *mcp_keypair.json
 *client_token.txt
+*email-sender_token.txt
+*read-only-user_token.txt
