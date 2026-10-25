@@ -155,3 +155,11 @@ Go to OpenAI "[platform.openai.com/home](https://platform.openai.com/home)" > cr
 	> Menu "API keys" > Add key > download
 
 I Use google gemini because it's free
+
+## Topic 4 - Ollama
+
+Download and install Ollama "[ollama.com](https://ollama.com/)"
+
+Search in Ollama and download and install an llm model: "Ollama run qwen:8b"
+
+Install Ollama conector "uv pip install ollama"
