@@ -5,6 +5,7 @@ Requiere: uv pip install fastmcp google-auth-oauthlib google-api-python-client
 
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.jwt import JWTVerifier, RSAKeyPair
+from fastmcp.server.middleware import Middleware, MiddlewareContext
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
@@ -14,10 +15,117 @@ import os.path
 import pickle
 import json
 from pydantic import SecretStr
+import jwt
+from typing import Optional
 
 # Configuración
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 
           'https://www.googleapis.com/auth/gmail.send']
+
+# ==================== SISTEMA DE PERMISOS ====================
+
+# Definir roles y sus permisos
+PERMISSIONS = {
+    "admin": {
+        "tools": ["list_emails", "send_email"],
+        "resources": ["gmail://profile", "docs://setup-manual/{version}"],
+        "prompts": ["daily_email_summary", "compose_professional_email"]
+    },
+    "reader": {
+        "tools": ["list_emails"],
+        "resources": ["gmail://profile"],
+        "prompts": ["daily_email_summary"]
+    },
+    "sender": {
+        "tools": ["send_email"],
+        "resources": [],
+        "prompts": ["compose_professional_email"]
+    }
+}
+
+# Mapeo de usuarios a roles (en producción, esto vendría de una BD)
+USER_ROLES = {
+    "gmail-client": "admin",
+    "read-only-user": "reader", 
+    "email-sender": "sender"
+}
+
+# ==================== MIDDLEWARE DE AUTORIZACIÓN ====================
+
+class AuthorizationMiddleware(Middleware):
+    """
+    Middleware para autorización granular a nivel de tool, resource y prompt
+    """
+
+    def __init__(self, public_key: str, issuer: str, audience: str):
+        super().__init__()
+        self.permissions = PERMISSIONS
+        self.user_roles = USER_ROLES
+        self.public_key = public_key
+        self.issuer = issuer
+        self.audience = audience
+
+    def get_user_from_context(self, context: MiddlewareContext) -> Optional[str]:
+        """
+        Extrae y valida el usuario desde el token JWT en el header Authorization
+        """
+        try:
+            # Acceder al request a traves del contexto
+            request = None
+
+            if hasattr(context, 'fastmcp_context') and context.fastmcp_context:
+                if hasattr(context.fastmcp_context, 'request_context'):
+                    req_ctx = context.fastmcp_context.request_context
+                    if hasattr(req_ctx, 'request'):
+                        request = req_ctx.request
+            
+            if not request:
+                print("No se pudo acceder a la peticion HTTP")
+                return None
+            
+            # Extraer el token del header Authorization
+            auth_header = request.headers.get("authorization", "")
+
+            if not auth_header:
+                print("No se encontro la cabecera de autorización")
+                return None
+            
+            # Formato esperado: "Bearer <token>"
+            if not auth_header.startswith("Bearer "):
+                print("La cabecera de autorización no es válida")
+                return None
+            
+            token = auth_header[7:] # Eliminamos "Bearer "
+
+            # Decodificar y validar el token JWT
+            try:
+                payload = jwt.decode(
+                    token,
+                    self.public_key,
+                    algorithms=["RS256"],
+                    issuer=self.issuer,
+                    audience=self.audience
+                )
+
+                # Extraer el subject (usuario) del token
+                user_identity = payload.get("sub")
+
+                if user_identity:
+                    print("Usuario extraído correctamente del token JWT.")
+                    return user_identity
+                else:
+                    print("Token no contine el usuario.")
+                    return None
+            
+            except jwt.ExpiredSignatureError:
+                print("Token JWT expirado")
+                return None
+            except jwt.InvalidTokenError as e:
+                print(f"Token JWT invalido: {e}")
+                return None
+        except Exception as e:
+            print(f"Error al extraer el usuario: {e}")
+            return None
 
 # ==================== AUTH ====================
 
@@ -47,23 +155,30 @@ def get_or_create_keypair():
                 'public_key': public_key_str
             }, f, indent=2)
         return keypair
-    
+
 # Generar/cargar el par de claves
 keypair = get_or_create_keypair()
 
 # Crear token para el cliente
-client_token = keypair.create_token(
-    subject="gmail-client",
-    issuer="gmail-mcp-server",
-    audience="gmail-mcp"
-)
+def create_token_for_user(user_id: str, role: str):
+    """Crea un token JWT para un usuario especifico."""
+    token = keypair.create_token(
+        subject=user_id,
+        issuer="gmail-mcp-server",
+        audience="gmail-mcp",
+        additional_claims={"role": role}
+    )
 
-# Guardar token para el cliente en disco
-with open('client_token.txt', 'w') as f:
-    f.write(client_token)
+    with open(f'{user_id}_token.txt', 'w') as f:
+        f.write(token)
 
-print(f"🔑 Token generado y guardado en client_token.txt")
-print(f"Token (primeros 50 caracteres): {client_token[:50]}...")
+    print(f"🔑 Token generado para '{user_id}' (rol: {role})")
+    return token
+
+# Crear tokens para usuarios de ejemplo
+create_token_for_user("gmail-client", "admin")
+create_token_for_user("read-only-user", "reader")
+create_token_for_user("email-sender", "sender")
 
 # Configurar auth con JWTVerifier
 public_key_str = keypair.public_key
@@ -316,4 +431,4 @@ Por favor:
 
 
 if __name__ == "__main__":
-    mcp.run(transport="http", host="0.0.0.0", port=8000, path="/mcp") # El auth solo funciona por http
+    mcp.run(transport="http", host="0.0.0.0", port=8000, path="/mcp")
